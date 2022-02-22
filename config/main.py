@@ -124,6 +124,14 @@ def read_json_file(fileName):
         raise Exception(str(e))
     return result
 
+def connect_config_db():
+    """
+    Connects to config_db
+    """
+    config_db = ConfigDBConnector()
+    config_db.connect()
+    return config_db
+
 def _get_breakout_options(ctx, args, incomplete):
     """ Provides dynamic mode option as per user argument i.e. interface name """
     all_mode_options = []
@@ -5093,6 +5101,34 @@ def ecn(profile, rmax, rmin, ymax, ymin, gmax, gmin, rdrop, ydrop, gdrop, verbos
     if gdrop is not None: command += " -gdrop %d" % gdrop
     if verbose: command += " -vv"
     clicommon.run_command(command, display_cmd=verbose)
+
+@config.group()
+def tx_config():
+    """config period time and threshold for tx error"""
+    pass
+
+# todo: check how to make it generic
+@tx_config.command()
+@click.argument("user_tx_period", type=int, required=True)
+def period(user_tx_period):
+    """config period time for tx error"""
+    if user_tx_period < 0 or user_tx_period == 0:
+        click.echo("period time for tx error monitor have to be positive")
+    config_db = connect_config_db()
+    tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
+    tx_period_key = 'polling_period'
+    config_db.set_entry(tx_table_name, tx_period_key, {"value": user_tx_period})
+
+@tx_config.command()
+@click.argument("user_tx_threshold", type=int, required=True)
+def threshold(user_tx_threshold):
+    """config threshold for tx error"""
+    if user_tx_threshold < 0 or user_tx_threshold == 0:
+        click.echo("threshold for tx error monitor have to be positive")
+    config_db = connect_config_db()
+    tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
+    tx_threshold_key = 'threshold'
+    config_db.set_entry(tx_table_name, tx_threshold_key, {"value": user_tx_threshold})
 
 
 #

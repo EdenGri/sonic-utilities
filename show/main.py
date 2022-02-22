@@ -1810,6 +1810,40 @@ def peer(db, peer_ip):
                                 values.get("tx_interval"), values.get("rx_interval"), values.get("multiplier"), values.get("multihop")])
 
     click.echo(tabulate(bfd_body, bfd_headers))
+# todo: understand the cls=AliasedGroup, default_if_no_args=False
+@cli.group(cls=AliasedGroup, default_if_no_args=False)
+def tx_error_monitor():
+    pass
+
+#todo: change the name to tx_config?
+@tx_error_monitor.command()
+def config():
+    """show tx error monitor configuration"""
+    config_db = connect_config_db()
+    config_tx_table = config_db.get_table('CFG_PORT_TX_ERROR_TABLE')
+    click.echo('polling period value is %s' % (config_tx_table['polling_period']['value']))
+    click.echo('threshold value is %s' % (config_tx_table['threshold']['value']))
+
+@tx_error_monitor.command()
+def status():
+    """show ports tx error status"""
+    db_connector = SonicV2Connector(host="127.0.0.1")
+    # todo: why false?
+    db_connector.connect(db_connector.STATE_DB, False)
+    tx_table_name = 'STATE_PORT_TX_ERROR_TABLE|'
+    pattern = '{}*'.format(tx_table_name)
+    statedb_tx_error_keys = db_connector.keys(db_connector.STATE_DB, pattern)
+
+    header = ['oid', 'status']
+    body = []
+    for tx_table_name_and_oid in statedb_tx_error_keys:
+        tx_err_status = db_connector.get(db_connector.STATE_DB, tx_table_name_and_oid, 'status')
+        oid = tx_table_name_and_oid[len(tx_table_name):]
+        body.append([oid, tx_err_status])
+    if not body:
+        click.echo('ports tx error status table is empty')
+    else:
+        click.echo(tabulate(body, header, tablefmt="grid"))
 
 
 # Load plugins and register them
