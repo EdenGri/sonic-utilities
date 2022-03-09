@@ -1810,8 +1810,10 @@ def peer(db, peer_ip):
                                 values.get("tx_interval"), values.get("rx_interval"), values.get("multiplier"), values.get("multihop")])
 
     click.echo(tabulate(bfd_body, bfd_headers))
-# todo: understand the cls=AliasedGroup, default_if_no_args=False
-@cli.group(cls=AliasedGroup, default_if_no_args=False)
+
+
+# todo: understand the cls=clicommon.AliasedGroup, default_if_no_args=False
+@cli.group(cls=clicommon.AliasedGroup)
 def tx_error_monitor():
     pass
 

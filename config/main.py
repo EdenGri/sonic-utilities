@@ -5101,7 +5101,7 @@ def ecn(profile, rmax, rmin, ymax, ymin, gmax, gmin, rdrop, ydrop, gdrop, verbos
     if gdrop is not None: command += " -gdrop %d" % gdrop
     if verbose: command += " -vv"
     clicommon.run_command(command, display_cmd=verbose)
-
+#todo what if the user type config tx_config period with out value??
 @config.group()
 def tx_config():
     """config period time and threshold for tx error"""
