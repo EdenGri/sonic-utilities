@@ -1812,12 +1812,10 @@ def peer(db, peer_ip):
     click.echo(tabulate(bfd_body, bfd_headers))
 
 
-# todo: understand the cls=clicommon.AliasedGroup, default_if_no_args=False
-@cli.group(cls=clicommon.AliasedGroup)
+@cli.group()
 def tx_error_monitor():
     pass
 
-#todo: change the name to tx_config?
 @tx_error_monitor.command()
 def config():
     """show tx error monitor configuration"""
@@ -1830,7 +1828,6 @@ def config():
 def status():
     """show ports tx error status"""
     db_connector = SonicV2Connector(host="127.0.0.1")
-    # todo: why false?
     db_connector.connect(db_connector.STATE_DB, False)
     tx_table_name = 'STATE_PORT_TX_ERROR_TABLE|'
     pattern = '{}*'.format(tx_table_name)

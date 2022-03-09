@@ -5101,35 +5101,33 @@ def ecn(profile, rmax, rmin, ymax, ymin, gmax, gmin, rdrop, ydrop, gdrop, verbos
     if gdrop is not None: command += " -gdrop %d" % gdrop
     if verbose: command += " -vv"
     clicommon.run_command(command, display_cmd=verbose)
-#todo what if the user type config tx_config period with out value??
+
 @config.group()
 def tx_config():
     """config period time and threshold for tx error"""
     pass
 
-# todo: check how to make it generic
+
+def tx_config_by_key(key, user_input):
+    if user_input < 0 or user_input == 0:
+        click.echo("threshold for tx error monitor have to be positive")
+    config_db = connect_config_db()
+    tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
+    config_db.set_entry(tx_table_name, key, {"value": user_input})
+
+
 @tx_config.command()
 @click.argument("user_tx_period", type=int, required=True)
 def period(user_tx_period):
     """config period time for tx error"""
-    if user_tx_period < 0 or user_tx_period == 0:
-        click.echo("period time for tx error monitor have to be positive")
-    config_db = connect_config_db()
-    tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
-    tx_period_key = 'polling_period'
-    config_db.set_entry(tx_table_name, tx_period_key, {"value": user_tx_period})
+    tx_config_by_key('polling_period', user_tx_period)
+
 
 @tx_config.command()
 @click.argument("user_tx_threshold", type=int, required=True)
 def threshold(user_tx_threshold):
     """config threshold for tx error"""
-    if user_tx_threshold < 0 or user_tx_threshold == 0:
-        click.echo("threshold for tx error monitor have to be positive")
-    config_db = connect_config_db()
-    tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
-    tx_threshold_key = 'threshold'
-    config_db.set_entry(tx_table_name, tx_threshold_key, {"value": user_tx_threshold})
-
+    tx_config_by_key('threshold',user_tx_threshold);
 
 #
 # 'pfc' group ('config interface pfc ...')
