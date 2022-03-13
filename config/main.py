@@ -5108,12 +5108,12 @@ def tx_config():
     pass
 
 
-def tx_config_by_key(key, user_input):
+def tx_config_by_key(field, user_input):
     if user_input < 0 or user_input == 0:
         click.echo("threshold for tx error monitor have to be positive")
     config_db = connect_config_db()
     tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
-    config_db.set_entry(tx_table_name, key, {"value": user_input})
+    config_db.set_entry(tx_table_name, "", {field: user_input})
 
 
 @tx_config.command()
