@@ -5107,13 +5107,13 @@ def tx_config():
     """config period time and threshold for tx error"""
     pass
 
-
+# todo: raise click exception
 def tx_config_by_key(field, user_input):
     if user_input < 0 or user_input == 0:
         click.echo("threshold for tx error monitor have to be positive")
     config_db = connect_config_db()
     tx_table_name = 'CFG_PORT_TX_ERROR_TABLE'
-    config_db.set_entry(tx_table_name, "", {field: user_input})
+    config_db.set_entry(tx_table_name, " ", {field: user_input})
 
 
 @tx_config.command()
@@ -5127,7 +5127,7 @@ def period(user_tx_period):
 @click.argument("user_tx_threshold", type=int, required=True)
 def threshold(user_tx_threshold):
     """config threshold for tx error"""
-    tx_config_by_key('threshold',user_tx_threshold);
+    tx_config_by_key('threshold', user_tx_threshold);
 
 #
 # 'pfc' group ('config interface pfc ...')

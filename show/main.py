@@ -1821,8 +1821,8 @@ def config():
     """show tx error monitor configuration"""
     config_db = connect_config_db()
     config_tx_table = config_db.get_table('CFG_PORT_TX_ERROR_TABLE')
-    click.echo('polling period value is %s' % (config_tx_table['']['polling_period']))
-    click.echo('threshold value is %s' % (config_tx_table['']['threshold']))
+    click.echo('polling period value is %s' % (config_tx_table[' ']['polling_period']))
+    click.echo('threshold value is %s' % (config_tx_table[' ']['threshold']))
 
 @tx_error_monitor.command()
 def status():
