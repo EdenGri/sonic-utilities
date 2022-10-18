@@ -44,7 +44,7 @@ class DBMigrator():
                      none-zero values.
               build: sequentially increase within a minor version domain.
         """
-        self.CURRENT_VERSION = 'version_3_0_5'
+        self.CURRENT_VERSION = 'version_3_0_6'
 
         self.TABLE_NAME      = 'VERSIONS'
         self.TABLE_KEY       = 'DATABASE'
@@ -69,7 +69,11 @@ class DBMigrator():
         self.stateDB = SonicV2Connector(host='127.0.0.1')
         if self.stateDB is not None:
             self.stateDB.connect(self.stateDB.STATE_DB)
-
+        
+        self.loglevelDB = SonicV2Connector(host='127.0.0.1')
+        if self.loglevelDB is not None:
+            self.loglevelDB.connect(self.loglevelDB.LOGLEVEL_DB)
+        
         version_info = device_info.get_sonic_version_info()
         asic_type = version_info.get('asic_type')
         self.asic_type = asic_type
@@ -717,9 +721,21 @@ class DBMigrator():
 
     def version_3_0_5(self):
         """
-        Current latest version. Nothing to do here.
+        Version 3_0_5
         """
         log.log_info('Handling version_3_0_5')
+        # Removing Jinja2_cache from LOGLEVEL DB
+        warmreboot_state = self.stateDB.get(self.stateDB.STATE_DB, 'WARM_RESTART_ENABLE_TABLE|system', 'enable')
+        if warmreboot_state == 'true':
+            self.loglevelDB.delete_table(self.loglevelDB.LOGLEVEL_DB, 'JINJA2_CACHE')
+        self.set_version('version_3_0_6')
+        return 'version_3_0_6'
+
+    def version_3_0_6(self):
+        """
+        Current latest version. Nothing to do here.
+        """
+        log.log_info('Handling version_3_0_6')
         return None
 
     def get_version(self):
